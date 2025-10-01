@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  .form-input {
+    --tw-ring-color: transparent;
+  }
+  
+  .hover-underline {
+    @apply transition-colors duration-300 ease-in-out;
+  }
+  
+  .hover-underline:hover {
+    @apply text-primary;
+  }
+  
+  .dark .hover-underline:hover {
+    @apply text-background-light;
+  }
+  
+  .input-focus {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  
+  .input-focus:focus {
+    @apply border-primary ring-2 ring-primary/50;
+  }
+  
+  .dark .input-focus:focus {
+    @apply ring-background-light/50;
+  }
+  
+  .progress-bar {
+    @apply transition-all duration-300 ease-in-out;
+  }
+  
+  .validation-message {
+    @apply text-xs mt-1 opacity-0 transition-opacity duration-300 ease-in-out;
+  }
+  
+  .invalid .validation-message {
+    @apply opacity-100;
+  }
+  
+  .invalid .form-input {
+    @apply border-red-500;
+  }
+  
+  .dark .invalid .form-input {
+    @apply border-red-600;
+  }
+}

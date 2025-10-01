@@ -1,0 +1,70 @@
+# ===================================
+# DEPENDENCIAS
+# ===================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ===================================
+# BUILD & DIST
+# ===================================
+/build
+/.svelte-kit
+/package
+.output
+.vercel
+.netlify
+
+# ===================================
+# VARIABLES DE ENTORNO
+# ===================================
+.env
+.env.local
+.env.*.local
+
+# ===================================
+# ARCHIVOS DEL SISTEMA
+# ===================================
+.DS_Store
+Thumbs.db
+
+# ===================================
+# LOGS
+# ===================================
+logs
+*.log
+
+# ===================================
+# CACHE & TEMP
+# ===================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ===================================
+# COVERAGE & TESTING
+# ===================================
+coverage/
+.nyc_output
+
+# ===================================
+# ARCHIVOS DESARROLLO
+# ===================================
+# Archivos de backup temporales
+*.bak
+*.backup
+.backup/
+
+# Archivos de documentación desarrollo
+BACKEND_INTEGRATION.md
+
+# ===================================
+# ESPECÍFICOS DEL PROYECTO
+# ===================================
+# Exportaciones CSV de prueba
+*.csv
+/exports/
