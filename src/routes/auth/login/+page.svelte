@@ -89,35 +89,6 @@
       </p>
     </div>
     
-    <!-- Demo Credentials -->
-    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-      <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
-        Credenciales de demostración:
-      </h3>
-      <div class="text-xs text-blue-700 dark:text-blue-300 space-y-2">
-        <div class="flex justify-between items-center">
-          <span><strong>Admin (Dev):</strong> admin@servicio.com / admin123</span>
-          <button 
-            type="button"
-            on:click={() => { email = 'admin@servicio.com'; password = 'admin123'; }}
-            class="text-xs bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-700"
-          >
-            Usar
-          </button>
-        </div>
-        <div class="flex justify-between items-center">
-          <span><strong>Usuario Real:</strong> sfherrera@celsia.com / Sebas_123</span>
-          <button 
-            type="button"
-            on:click={() => { email = 'sfherrera@celsia.com'; password = 'Sebas_123'; }}
-            class="text-xs bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded hover:bg-blue-200 dark:hover:bg-blue-700"
-          >
-            Usar
-          </button>
-        </div>
-      </div>
-    </div>
-    
     <!-- Login Form -->
     <form class="mt-8 space-y-6" on:submit={handleLogin}>
       <div class="space-y-4">
