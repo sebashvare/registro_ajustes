@@ -75,7 +75,18 @@ export interface PaginatedResponse<T = any> {
 // Función helper para manejar respuestas de la API
 export async function handleApiResponse<T>(response: Response): Promise<ApiResponse<T>> {
   try {
-    const data = await response.json();
+    const contentType = response.headers.get('content-type');
+    let data;
+    
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      const text = await response.text();
+      console.log('📄 Response text:', text);
+      data = { message: text };
+    }
+    
+    console.log('📋 Parsed response data:', data);
     
     if (response.ok) {
       return {
@@ -83,17 +94,41 @@ export async function handleApiResponse<T>(response: Response): Promise<ApiRespo
         data
       };
     } else {
+      const errorMessage = data.error || data.message || data.detail || 
+                          (Array.isArray(data.non_field_errors) ? data.non_field_errors.join(', ') : null) ||
+                          'Error desconocido';
+      
+      // Manejar errores de validación de campos específicos
+      let fieldErrors: string[] = [];
+      if (data && typeof data === 'object') {
+        Object.keys(data).forEach(field => {
+          if (Array.isArray(data[field])) {
+            fieldErrors.push(`${field}: ${data[field].join(', ')}`);
+          }
+        });
+      }
+      
+      const finalErrorMessage = fieldErrors.length > 0 ? fieldErrors.join('; ') : errorMessage;
+      
+      console.log('❌ Error response:', {
+        status: response.status,
+        statusText: response.statusText,
+        data,
+        errorMessage: finalErrorMessage,
+        fieldErrors
+      });
+      
       return {
         success: false,
-        error: data.error || data.message || data.detail || 'Error desconocido',
+        error: finalErrorMessage,
         data
       };
     }
   } catch (error) {
-    console.error('Error parsing response:', error);
+    console.error('❌ Error parsing response:', error);
     return {
       success: false,
-      error: 'Error de conexión con el servidor'
+      error: `Error de conexión con el servidor (Status: ${response.status})`
     };
   }
 }
@@ -113,10 +148,22 @@ export async function apiRequest<T = any>(
       }
     };
 
+    console.log('🌐 API Request Details:');
+    console.log('- URL:', url);
+    console.log('- Method:', config.method);
+    console.log('- Headers:', config.headers);
+    console.log('- Body:', config.body);
+
     const response = await fetch(url, config);
+    
+    console.log('📡 Response Details:');
+    console.log('- Status:', response.status);
+    console.log('- StatusText:', response.statusText);
+    console.log('- Headers:', Object.fromEntries(response.headers.entries()));
+    
     return await handleApiResponse<T>(response);
   } catch (error) {
-    console.error('API Request Error:', error);
+    console.error('❌ API Request Error:', error);
     return {
       success: false,
       error: 'Error de conexión con el servidor'

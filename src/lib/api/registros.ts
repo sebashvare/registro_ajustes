@@ -84,7 +84,14 @@ export class RegistrosService {
    * Crear un nuevo registro
    */
   static async createRegistro(data: AjusteFormData): Promise<ApiResponse<RegistroResponse>> {
-    return await api.post<RegistroResponse>(`${API_CONFIG.ENDPOINTS.REGISTROS}/`, data);
+    console.log('🚀 RegistrosService.createRegistro - Datos recibidos:', data);
+    console.log('🌐 Endpoint:', `${API_CONFIG.ENDPOINTS.REGISTROS}/`);
+    
+    const result = await api.post<RegistroResponse>(`${API_CONFIG.ENDPOINTS.REGISTROS}/`, data);
+    
+    console.log('📨 Resultado de la petición:', result);
+    
+    return result;
   }
 
   /**
