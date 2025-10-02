@@ -39,8 +39,14 @@
 <header class="bg-surface-light text-text-light dark:bg-surface-dark dark:text-text-dark shadow-minimal-light dark:shadow-minimal-dark">
   <nav class="container mx-auto px-6 py-4">
     <div class="flex items-center justify-between">
-      <div class="text-2xl font-bold">
-        <a href="/dashboard" class="hover-underline">Servicio</a>
+      <div class="flex items-center">
+        <a href="/dashboard" class="flex items-center hover:opacity-80 transition-opacity duration-300">
+          <img 
+            src="https://www.celsia.com/wp-content/uploads/2021/05/Grupo-697.svg" 
+            alt="Celsia" 
+            class="h-8 w-auto object-contain"
+          />
+        </a>
       </div>
       
       <div class="hidden md:flex items-center space-x-6">

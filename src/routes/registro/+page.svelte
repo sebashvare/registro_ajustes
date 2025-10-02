@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import type { AjusteFormData, FormErrors, ValidationRules } from '$lib/types';
   import { RegistrosService } from '$lib/api/registros';
+  import { auth } from '$lib/stores/auth';
   
   let formData: AjusteFormData = {
     id_cuenta: '',
@@ -19,13 +21,28 @@
   let loading = false;
   let submitError = '';
   let submitSuccess = false;
+  let currentUser: any = null;
+  
+  // Configurar el usuario autenticado automáticamente
+  onMount(() => {
+    const unsubscribe = auth.subscribe(state => {
+      currentUser = state.user;
+      if (state.user && state.user.name) {
+        formData.asesor_que_ajusto = state.user.name;
+        // Recalcular progreso cuando se asigna automáticamente
+        updateProgress();
+      }
+    });
+    
+    return unsubscribe;
+  });
   
   const validationRules: ValidationRules = {
     id_cuenta: { required: true },
     id_acuerdo_servicio: { required: true },
     id_cargo_facturable: { required: true },
     fecha_ajuste: { required: true },
-    asesor_que_ajusto: { required: true },
+    asesor_que_ajusto: { required: false }, // Automático, no requerido por el usuario
     valor_ajustado: { required: true, type: 'number' },
     justificacion: { required: true }
   };
@@ -259,24 +276,32 @@
         </div>
         
         <!-- Asesor que Ajustó -->
-        <div class:invalid={errors.asesor_que_ajusto}>
+        <div>
           <label for="asesor_que_ajusto" class="block text-sm font-medium mb-1">
             Asesor que Ajustó
+            <span class="text-xs text-gray-500 font-normal">(Usuario actual)</span>
           </label>
-          <input
-            id="asesor_que_ajusto"
-            name="asesor_que_ajusto"
-            type="text"
-            bind:value={formData.asesor_que_ajusto}
-            on:input={(e) => handleInput('asesor_que_ajusto', e.currentTarget.value)}
-            placeholder="Ingrese nombre del asesor"
-            class="form-input w-full px-4 py-3 border border-border-light rounded-lg text-sm focus:border-primary focus:ring-primary input-focus placeholder-gray-400 dark:placeholder-gray-500 dark:border-border-dark"
-          />
-          {#if errors.asesor_que_ajusto}
-            <div class="validation-message text-red-500 dark:text-red-400">
-              {errors.asesor_que_ajusto}
-            </div>
-          {/if}
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              person
+            </span>
+            <input
+              id="asesor_que_ajusto"
+              name="asesor_que_ajusto"
+              type="text"
+              value={formData.asesor_que_ajusto}
+              readonly
+              disabled
+              class="form-input w-full pl-10 pr-4 py-3 border border-border-light rounded-lg text-sm bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 cursor-not-allowed dark:border-border-dark"
+              placeholder="Usuario no identificado"
+            />
+            <span class="material-symbols-outlined absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              lock
+            </span>
+          </div>
+          <div class="text-xs text-gray-500 mt-1">
+            Este campo se llena automáticamente con el usuario que inició sesión
+          </div>
         </div>
         
         <!-- Valor Ajustado -->
