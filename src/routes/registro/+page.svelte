@@ -61,12 +61,20 @@
     const rules = validationRules[field];
     if (!rules) return '';
     
-    if (rules.required && (!value || value.toString().trim() === '')) {
+    // Para valor_ajustado, convertir string vacío a 0 para validación
+    const validationValue = field === 'valor_ajustado' && value === '' ? 0 : value;
+    
+    if (rules.required && (!validationValue || validationValue.toString().trim() === '')) {
       return `${fieldLabels[field]} es requerido.`;
     }
     
-    if (rules.type === 'number' && isNaN(parseFloat(value)) && value !== '') {
+    if (rules.type === 'number' && isNaN(parseFloat(validationValue)) && validationValue !== '') {
       return `${fieldLabels[field]} debe ser un número válido.`;
+    }
+    
+    // Validación específica para valor_ajustado
+    if (field === 'valor_ajustado' && validationValue !== '' && parseFloat(validationValue) <= 0) {
+      return `${fieldLabels[field]} debe ser mayor a 0.`;
     }
     
     return '';
@@ -96,6 +104,13 @@
     const requiredFields = Object.keys(validationRules);
     const filledFields = requiredFields.filter(field => {
       const value = formData[field as keyof AjusteFormData];
+      
+      // Para valor_ajustado, considerar como lleno si es un número válido > 0
+      if (field === 'valor_ajustado') {
+        const numValue = parseFloat(value as string) || 0;
+        return numValue > 0;
+      }
+      
       return value !== '' && value !== null && value !== undefined;
     });
     
@@ -128,13 +143,29 @@
       submitError = '';
       submitSuccess = false;
       
-      // Convertir el valor a negativo ya que representa un descuento
+      // Preparar datos para envío, asegurando que valor_ajustado sea numérico
+      const valorAjustado = formData.valor_ajustado === '' ? 0 : parseFloat(formData.valor_ajustado) || 0;
+      
+      // Convertir el valor a negativo ya que representa un descuento/ajuste
       const adjustedFormData = {
         ...formData,
-        valor_ajustado: -Math.abs(formData.valor_ajustado)
+        valor_ajustado: -Math.abs(valorAjustado)
       };
       
+      // Log detallado para debugging
+      console.log('📋 Datos del formulario a enviar:', adjustedFormData);
+      console.log('🔍 Validación de campos requeridos:');
+      console.log('- id_cuenta:', adjustedFormData.id_cuenta);
+      console.log('- id_acuerdo_servicio:', adjustedFormData.id_acuerdo_servicio);
+      console.log('- id_cargo_facturable:', adjustedFormData.id_cargo_facturable);
+      console.log('- fecha_ajuste:', adjustedFormData.fecha_ajuste);
+      console.log('- asesor_que_ajusto:', adjustedFormData.asesor_que_ajusto);
+      console.log('- valor_ajustado:', adjustedFormData.valor_ajustado);
+      console.log('- justificacion:', adjustedFormData.justificacion);
+      
       const response = await RegistrosService.createRegistro(adjustedFormData);
+      
+      console.log('📡 Respuesta del servidor:', response);
       
       if (response.success && response.data) {
         submitSuccess = true;
@@ -320,8 +351,16 @@
               min="0"
               bind:value={formData.valor_ajustado}
               on:input={(e) => {
-                const value = parseFloat(e.currentTarget.value) || 0;
-                handleInput('valor_ajustado', Math.abs(value));
+                const inputValue = e.currentTarget.value;
+                if (inputValue === '' || inputValue === null) {
+                  // Permitir campo vacío temporalmente
+                  handleInput('valor_ajustado', '');
+                } else {
+                  const value = parseFloat(inputValue);
+                  if (!isNaN(value)) {
+                    handleInput('valor_ajustado', Math.abs(value));
+                  }
+                }
               }}
               placeholder="0.00"
               class="form-input w-full pl-8 pr-4 py-3 border border-border-light rounded-lg text-sm focus:border-primary focus:ring-primary input-focus placeholder-gray-400 dark:placeholder-gray-500 dark:border-border-dark"
