@@ -3,6 +3,7 @@
   import { browser } from '$app/environment';
   import type { AjusteFormData } from '$lib/types';
   import { RegistrosService } from '$lib/api/registros';
+  import { auth } from '$lib/stores/auth';
   
   let registros: any[] = [];
   let loading = false;
@@ -13,6 +14,20 @@
   let itemsPerPage = 10;
   let totalItems = 0;
   let error = '';
+  let currentUser: any = null;
+  
+  // Suscribirse al store de auth para obtener el usuario actual
+  onMount(() => {
+    const unsubscribeAuth = auth.subscribe(state => {
+      currentUser = state.user;
+    });
+    
+    loadRegistros();
+    
+    return () => {
+      unsubscribeAuth();
+    };
+  });
   
   // Cargar registros desde la API
   async function loadRegistros() {
@@ -56,6 +71,9 @@
   // Computed values para paginación del servidor
   $: totalPages = Math.ceil(totalItems / itemsPerPage);
   
+  // Verificar si el usuario actual es admin
+  $: isAdmin = currentUser && currentUser.role === 'admin';
+  
   // Recargar cuando cambien los parámetros
   $: if (browser && (currentPage || itemsPerPage || sortField || sortDirection)) {
     loadRegistros();
@@ -97,23 +115,40 @@
   }
   
   async function deleteRegistro(id: string) {
-    if (!confirm('¿Estás seguro de que deseas eliminar este registro?')) {
+    // Validar que el usuario sea admin
+    if (!currentUser || currentUser.role !== 'admin') {
+      alert('No tienes permisos para eliminar registros. Solo los administradores pueden realizar esta acción.');
+      return;
+    }
+    
+    if (!id) {
+      alert('Error: ID de registro no válido');
+      return;
+    }
+    
+    if (!confirm('¿Estás seguro de que deseas eliminar este registro? Esta acción no se puede deshacer.')) {
       return;
     }
     
     try {
       loading = true;
+      console.log('🗑️ Eliminando registro con ID:', id);
+      
       const response = await RegistrosService.deleteRegistro(id);
+      
+      console.log('📡 Respuesta de eliminación:', response);
       
       if (response.success) {
         // Recargar los datos después de eliminar
         await loadRegistros();
+        alert('Registro eliminado exitosamente');
       } else {
+        console.error('Error al eliminar:', response.error);
         alert(response.error || 'Error al eliminar el registro');
       }
     } catch (error) {
-      console.error('Error:', error);
-      alert('Error al eliminar el registro');
+      console.error('Error eliminando registro:', error);
+      alert('Error de conexión al eliminar el registro');
     } finally {
       loading = false;
     }
@@ -214,11 +249,7 @@
       }).join(',')
     ).join('\n');
   }
-  
-  // Cargar datos al montar el componente
-  onMount(() => {
-    loadRegistros();
-  });
+
 </script>
 
 <svelte:head>
@@ -432,13 +463,19 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div class="flex items-center justify-end space-x-2">
-                    <button
-                      on:click={() => deleteRegistro(registro.id_cuenta)}
-                      class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors p-1 rounded"
-                      title="Eliminar registro"
-                    >
-                      <span class="material-symbols-outlined text-sm">delete</span>
-                    </button>
+                    {#if isAdmin}
+                      <button
+                        on:click={() => deleteRegistro(registro.id)}
+                        class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 transition-colors p-1 rounded"
+                        title="Eliminar registro"
+                      >
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    {:else}
+                      <span class="text-gray-400 text-xs" title="Solo administradores pueden eliminar registros">
+                        Sin permisos
+                      </span>
+                    {/if}
                   </div>
                 </td>
               </tr>
