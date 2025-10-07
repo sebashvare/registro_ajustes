@@ -205,7 +205,6 @@
       'Fecha de Ajuste',
       'Asesor que Ajustó',
       'Valor Ajustado',
-      'Observación Adicional',
       'Justificación',
       'Fecha de Creación'
     ];
@@ -223,7 +222,6 @@
         minimumFractionDigits: 2,
         maximumFractionDigits: 2 
       }).format(Number(registro.valor_ajustado)),
-      registro.obs_adicional || '',
       registro.justificacion,
       new Date(registro.created_at).toLocaleDateString('es-CO', {
         year: 'numeric',

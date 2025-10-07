@@ -13,7 +13,6 @@ export const actions: Actions = {
       fecha_ajuste: data.get('fecha_ajuste') as string,
       asesor_que_ajusto: data.get('asesor_que_ajusto') as string,
       valor_ajustado: parseFloat(data.get('valor_ajustado') as string) || 0,
-      obs_adicional: data.get('obs_adicional') as string,
       justificacion: data.get('justificacion') as string
     };
     

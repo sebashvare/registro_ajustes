@@ -4,8 +4,7 @@ export interface AjusteFormData {
   id_cargo_facturable: string;
   fecha_ajuste: string;
   asesor_que_ajusto: string;
-  valor_ajustado: number;
-  obs_adicional?: string;
+  valor_ajustado: number | string;
   justificacion: string;
 }
 

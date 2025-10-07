@@ -12,7 +12,6 @@
     fecha_ajuste: '',
     asesor_que_ajusto: '',
     valor_ajustado: 0,
-    obs_adicional: '',
     justificacion: ''
   };
   
@@ -144,7 +143,9 @@
       submitSuccess = false;
       
       // Preparar datos para envío, asegurando que valor_ajustado sea numérico
-      const valorAjustado = formData.valor_ajustado === '' ? 0 : parseFloat(formData.valor_ajustado) || 0;
+      const valorAjustado = formData.valor_ajustado === '' || formData.valor_ajustado === 0 ? 0 : 
+                            typeof formData.valor_ajustado === 'string' ? parseFloat(formData.valor_ajustado) || 0 : 
+                            formData.valor_ajustado || 0;
       
       // Convertir el valor a negativo ya que representa un descuento/ajuste
       const adjustedFormData = {
@@ -178,7 +179,6 @@
           fecha_ajuste: '',
           asesor_que_ajusto: '',
           valor_ajustado: 0,
-          obs_adicional: '',
           justificacion: ''
         };
         errors = {};
@@ -371,21 +371,6 @@
               {errors.valor_ajustado}
             </div>
           {/if}
-        </div>
-        
-        <!-- Observaciones Adicionales -->
-        <div class="md:col-span-2">
-          <label for="obs_adicional" class="block text-sm font-medium mb-1">
-            Observaciones Adicionales
-          </label>
-          <textarea
-            id="obs_adicional"
-            name="obs_adicional"
-            rows="4"
-            bind:value={formData.obs_adicional}
-            placeholder="Ingrese observaciones adicionales"
-            class="form-input w-full px-4 py-3 border border-border-light rounded-lg text-sm focus:border-primary focus:ring-primary input-focus placeholder-gray-400 dark:placeholder-gray-500 dark:border-border-dark"
-          ></textarea>
         </div>
         
         <!-- Justificación -->

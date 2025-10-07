@@ -14,7 +14,6 @@ export interface RegistroResponse {
   fecha_ajuste: string;
   asesor_que_ajusto: string;
   valor_ajustado: number;
-  obs_adicional?: string;
   justificacion: string;
   created_at: string;
   updated_at: string;
@@ -191,7 +190,6 @@ export class RegistrosService {
       fecha_ajuste: apiRegistro.fecha_ajuste,
       asesor_que_ajusto: apiRegistro.asesor_que_ajusto,
       valor_ajustado: apiRegistro.valor_ajustado,
-      obs_adicional: apiRegistro.obs_adicional,
       justificacion: apiRegistro.justificacion,
       created_at: apiRegistro.created_at,
       updated_at: apiRegistro.updated_at
@@ -209,7 +207,6 @@ export class RegistrosService {
       fecha_ajuste: formData.fecha_ajuste,
       asesor_que_ajusto: formData.asesor_que_ajusto,
       valor_ajustado: formData.valor_ajustado,
-      obs_adicional: formData.obs_adicional,
       justificacion: formData.justificacion
     };
   }

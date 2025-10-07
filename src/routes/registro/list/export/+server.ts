@@ -10,7 +10,6 @@ let registrosDB = [
     fecha_ajuste: '2025-01-01',
     asesor_que_ajusto: 'Juan Pérez',
     valor_ajustado: 150000,
-    obs_adicional: 'Ajuste por error en facturación inicial',
     justificacion: 'Se detectó un sobrecobro en el periodo anterior',
     created_at: '2025-01-01T10:00:00Z'
   },
@@ -22,7 +21,6 @@ let registrosDB = [
     fecha_ajuste: '2025-01-02',
     asesor_que_ajusto: 'María García',
     valor_ajustado: -75000,
-    obs_adicional: 'Descuento por interrupción del servicio',
     justificacion: 'Compensación por falla técnica del 15-20 de diciembre',
     created_at: '2025-01-02T14:30:00Z'
   },
@@ -34,7 +32,6 @@ let registrosDB = [
     fecha_ajuste: '2025-01-03',
     asesor_que_ajusto: 'Carlos Rodríguez',
     valor_ajustado: 200000,
-    obs_adicional: '',
     justificacion: 'Ajuste por servicios adicionales no facturados',
     created_at: '2025-01-03T09:15:00Z'
   }
@@ -48,7 +45,6 @@ export const GET: RequestHandler = async () => {
     'Fecha Ajuste',
     'Asesor',
     'Valor Ajustado',
-    'Observaciones',
     'Justificación',
     'Fecha Creación'
   ];
@@ -63,7 +59,6 @@ export const GET: RequestHandler = async () => {
         registro.fecha_ajuste,
         `"${registro.asesor_que_ajusto}"`,
         registro.valor_ajustado,
-        `"${registro.obs_adicional || ''}"`,
         `"${registro.justificacion}"`,
         registro.created_at
       ].join(',')
